@@ -20,6 +20,7 @@ Example: 1.0.2.9.3 (1 - Major version, 0 - Minor version, 2 - Patch,
 If the main fields of two versions are equal,
 but the second contains a pre-build, second version is less.
 
+<<<<<<< HEAD
 If the build version has a sub-build version, provided that the second
 version has the same build version and does not have a
 sub-build version, then the second version is larger.
@@ -32,6 +33,9 @@ Comparision examples:
 1.0.0 == 1
 1.0.1.0 < 1.0.1
 1.0.0-rc.1(equal 1.0.0.3.1) < 1.0.0
+=======
+1.0.0 = 1
+>>>>>>> 034803be46a8245ec8e00718825309c25c747256
 """
 
 import functools
