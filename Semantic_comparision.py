@@ -30,12 +30,12 @@ Example: 1 to 1.0.0
 
 Comparision examples:
 1.0.0 == 1
+1.0.0.0 < 1 and 1.0.0.0 < 1.0.0
 1.0.1.0 < 1.0.1
 1.0.0-rc.1(equal 1.0.0.3.1) < 1.0.0
 """
 
-import functools
-from itertools import zip_longest
+iimport functools
 
 
 @functools.total_ordering
@@ -54,15 +54,17 @@ class Version:
         version_couples = zip(self.normalized_version,
                               other.normalized_version)
 
-        for couple in version_couples:
-            if couple[0] < couple[1]:
+        for version in version_couples:
+            if version[0] < version[1]:
                 return True
-            elif couple[0] > couple[1]:
+
+            elif version[0] > version[1]:
                 return False
-            elif couple[0] == couple[1]:
-                continue
-        return True if len(self.normalized_version) > \
-                       len(other.normalized_version) else False
+
+        if len(self.normalized_version) > len(other.normalized_version):
+            return True
+
+        return False
 
     def __ne__(self, other):
         """Overriding python "Not equal" magic method.
@@ -70,18 +72,16 @@ class Version:
         :param other: other normalized version
         :return: bool
         """
-        version_couples = zip_longest(self.normalized_version,
-                                      other.normalized_version,
-                                      fillvalue='0')
-        for couple in version_couples:
-            if couple[0] > couple[1]:
+        version_couples = zip(self.normalized_version,
+                              other.normalized_version)
+
+        for version in version_couples:
+            if version[0] > version[1] or version[0] < version[1]:
                 return True
 
-            if couple[0] == couple[1]:
-                continue
-
-            if couple[0] < couple[1]:
-                return True
+        if len(self.normalized_version) != len(
+                other.normalized_version):
+            return True
 
         return False
 
@@ -98,6 +98,7 @@ def main():
     ]
 
     for version_1, version_2 in to_test:
+        print(version_1, version_2)
         assert Version(version_1) < Version(version_2), "le failed"
         assert Version(version_2) > Version(version_1), "ge failed"
         assert Version(version_2) != Version(version_1), "neq failed"
@@ -117,6 +118,9 @@ def version_normalize(string: str):
     for key in arg_to_replace.keys():
         version = version.replace(key, arg_to_replace[key])
     version = version.split('.')
+
+    # This construction needed here to adding one extra rule, which
+    # cannot be done with zip_longest.
 
     while len(version) < 3:
         version.append('0')
